@@ -4,8 +4,8 @@ const bodyStructute = () => {
   <header class="header"></header>
   <div id ="container">
   <h2 class="title">Nonograms</h2>
-  <div id ="nonogram">
-  </div>
+  <canvas id="canvas"></canvas>
+  <div id="nonogram"></div>
   </div>
   `
   const root = document.createElement('div');
