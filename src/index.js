@@ -5,7 +5,8 @@ const bodyStructute = () => {
   <div id ="container">
   <h2 class="title">Nonograms</h2>
   <canvas id="canvas"></canvas>
-  <div id="nonogram"></div>
+  <div id="nonogram">
+  </div>
   </div>
   `
   const root = document.createElement('div');
