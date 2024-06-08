@@ -4,6 +4,10 @@ container.appendChild(nonogram)
 
 const rows = 5
 const cols = 5
+let timeStart 
+let timeEnd
+let timeInterval
+let lastRightClick
 
 for(let i = 0; i < rows; i++) {
     for(let j = 0; j < cols; j++) {
@@ -36,10 +40,20 @@ if(event.target.classList.contains('cell')) {
 }
 }
 nonogram.addEventListener('contextmenu', xChange)
-nonogram.addEventListener('contextmenu', () => {
-    const cells = document.querySelectorAll('.cell');
-    const cross = document.querySelectorAll('.cross');
-    cross.style.display = 'none';
+nonogram.addEventListener('contextmenu', (event) => {
+    event.preventDefault()
+    const currTime = new Date().getTime()
+    const timeClick = currTime - lastRightClick
+    lastRightClick = currTime
+    if(timeClick <= 300) {
+        const clickedCell = event.target.closest('.cell')
+        if(clickedCell) {
+            const cross = clickedCell.querySelector('.cross');
+            if(cross) {
+                cross.style.display = 'none';
+            }
+        }
+    }
 })
 
 const resetBtn = document.createElement('button');
@@ -55,4 +69,34 @@ resetBtn.addEventListener('click', () => {
             cross.remove();
         });
     });
+    clearInterval(timeInterval)
+    timeStart = null
+    document.getElementById('timer').textContent = '00:00'
+})
+
+const timer = document.createElement('div')
+timer.id = 'timer'
+timer.innerHTML = "00:00"
+container.appendChild(timer)
+
+const startTimer = () => {
+    timeStart = new Date()
+    timeInterval = setInterval(updateTimer, 1000)
+
+}
+const updateTimer = () => {
+    const currentTime = new Date()
+    const elapsedTime = Math.floor((currentTime - timeStart) / 1000)
+    const minutes = Math.floor(elapsedTime / 60)
+    const seconds = elapsedTime % 60;
+    const formattedTime = `${padZero(minutes)}: ${padZero(seconds)}`
+    document.getElementById('timer').textContent = formattedTime
+}
+const padZero = (num) => {
+    return num < 10 ? '0' + num : num
+}
+nonogram.addEventListener('click', () => {
+    if(!timeStart) {
+        startTimer()
+    }
 })
