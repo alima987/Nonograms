@@ -1,3 +1,4 @@
+import { puzzles } from "./levels";
 const container = document.getElementById('container')
 const nonogram = document.getElementById('nonogram');
 container.appendChild(nonogram)
@@ -23,6 +24,7 @@ const cellColorChange = (event) => {
         const cell = event.target
         cell.classList.toggle('black')
     }
+    fillHints();
 }
 nonogram.addEventListener('click', cellColorChange)
 
@@ -100,3 +102,80 @@ nonogram.addEventListener('click', () => {
         startTimer()
     }
 })
+const puzzleIndex = 0; 
+
+const puzzleData = puzzles[puzzleIndex];
+const puzzleName = puzzleData[0].name;
+const puzzleMatrix = puzzleData[0].data;
+
+const fillHints = () => {
+    const rowsHints = document.getElementById('rows-hints');
+    const colsHints = document.getElementById('cols-hints');
+
+    
+    rowsHints.innerHTML = '';
+    colsHints.innerHTML = '';
+
+  
+    for (let i = 0; i < rows; i++) {
+        const rowHint = document.createElement('div');
+        rowHint.textContent = getRowHint(i);
+        rowsHints.appendChild(rowHint);
+    }
+
+    
+    for (let j = 0; j < cols; j++) {
+        const colHint = document.createElement('div');
+        colHint.textContent = getColHint(j);
+        colsHints.appendChild(colHint);
+    }
+};
+
+const getRowHint = (rowIndex) => {
+    const row = puzzleMatrix[rowIndex];
+    const hint = [];
+    let count = 0;
+    for (let i = 0; i < cols; i++) {
+        if (row[i] === 1) {
+            count++;
+        } else {
+            if (count > 0) {
+                hint.push(count);
+                count = 0;
+            }
+        }
+    }
+    if (count > 0) {
+        hint.push(count);
+    }
+    return hint.join(' ');
+};
+
+const getColHint = (colIndex) => {
+    const hint = [];
+    let count = 0;
+    for (let i = 0; i < rows; i++) {
+        if (puzzleMatrix[i][colIndex] === 1) {
+            count++;
+        } else {
+            if (count > 0) {
+                hint.push(count);
+                count = 0;
+            }
+        }
+    }
+    if (count > 0) {
+        hint.push(count);
+    }
+    return hint.join('\n');
+};
+
+const rowsHints = document.createElement('div');
+rowsHints.id = 'rows-hints';
+container.insertBefore(rowsHints, nonogram);
+
+const colsHints = document.createElement('div');
+colsHints.id = 'cols-hints';
+container.insertBefore(colsHints, nonogram.nextSibling);
+
+fillHints();

@@ -6,6 +6,8 @@ h1 {
 }
 #nonogram {
   display: grid;
+  align-items: center;
+  justify-content: center;
   grid-template-columns: repeat(5, 50px); 
   grid-template-rows: repeat(5, 50px); 
   gap: 1px; 
@@ -23,5 +25,19 @@ h1 {
     font-size: 24px;
     color: red;
     cursor: pointer;
+    pointer-events: none;
   }
+  .cell {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+  }
+  
+  .cell.black {
+    background-color: #000;
+  }
+  
+  
 }
+
