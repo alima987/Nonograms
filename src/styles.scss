@@ -38,6 +38,29 @@ h1 {
     background-color: #000;
   }
   
-  
 }
 
+#cols-hints {
+  position: absolute;
+  top: 34px;
+  left: 398px;
+  width: 209px;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+ #col-hints {
+  white-space: pre-line;
+}
+div#rows-hints {
+  height: 258px;
+  width: 38px;
+  position: absolute;
+  top: 67px;
+  left: 332px;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  justify-content: space-around;
+}
