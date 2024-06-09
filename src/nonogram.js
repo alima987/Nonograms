@@ -175,3 +175,4 @@ const getRowHints = (rowIndex) => {
    container.insertBefore(colsHints, nonogram);
 
 fillHints(); 
+
