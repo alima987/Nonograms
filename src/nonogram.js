@@ -9,6 +9,70 @@ let timeStart
 let timeEnd
 let timeInterval
 let lastRightClick
+let hasWon
+let hasLost
+
+const createModal = (className) => {
+    const element = document.createElement('div');
+    element.classList.add(className);
+    container.appendChild(element);
+    return element;
+  }
+
+  const createTextElement = (className, text) => {
+    const textElement = document.createElement('div');
+    textElement.classList.add(className);
+    textElement.innerHTML = text;
+    return textElement;
+  }
+  const createWinLose = (className) => {
+    const element = document.createElement('div');
+    element.classList.add(className);
+    modal.appendChild(element);
+    return element;
+  }
+  export const modal = createModal('modal');
+  export const overlay = createModal('overlay');
+  export const win = createWinLose('win');
+  export const lose = createWinLose('lose');
+  
+  export const winContent = () => {
+    if (!hasWon) {
+      const wonText = createTextElement('won-text', 'Great! You have solved the nonogram!');
+      win.appendChild(wonText);
+      hasWon = true;
+    }
+  };
+  
+  export const loseContent = () => {
+    if (!hasLost) {
+      const lostText = createTextElement('lost-text', 'Sorry! You\'ve lost the game!');
+      lose.appendChild(lostText);
+      hasLost = true;
+    }
+  };
+  
+  export const modalOpen = () => {
+    modal.classList.remove('hidden');
+    overlay.classList.remove('hidden');
+    if (winCheck()) {
+      winContent();
+    } else {
+      loseContent();
+    }
+  };
+  
+  export const modalClose = () => {
+    modal.classList.add('hidden');
+    overlay.classList.add('hidden');
+  };
+  
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && (!modal.classList.contains('hidden'))) {
+      modalClose();
+    }
+  });
+  
 
 for(let i = 0; i < rows; i++) {
     for(let j = 0; j < cols; j++) {
@@ -25,6 +89,9 @@ const cellColorChange = (event) => {
         cell.classList.toggle('black')
     }
     fillHints();
+    if (winCheck()) {
+        modalOpen()
+    }
 }
 nonogram.addEventListener('click', cellColorChange)
 
@@ -74,6 +141,7 @@ resetBtn.addEventListener('click', () => {
     clearInterval(timeInterval)
     timeStart = null
     document.getElementById('timer').textContent = '00:00'
+    modalClose()
 })
 
 const timer = document.createElement('div')
@@ -175,4 +243,16 @@ const getRowHints = (rowIndex) => {
    container.insertBefore(colsHints, nonogram);
 
 fillHints(); 
-
+export const winCheck = () => {
+    const cells = document.querySelectorAll('.cell')
+    for(let i = 0; i < cells.length; i++) {
+        const cell = cells[i]
+        const row = parseInt(cell.dataset.row)
+        const col = parseInt(cell.dataset.col)
+        const isFilled = cell.classList.contains('black')
+        if ((puzzleMatrix[row][col] === 1 && !isFilled) || (puzzleMatrix[row][col] === 0 && isFilled)) {
+            return false;
+          }
+        }
+    return true
+}
