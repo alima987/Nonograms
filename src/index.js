@@ -1,7 +1,7 @@
 import "./styles.scss";
 const bodyStructute = () => {
   const html = `
-  <header class="header"></header>
+  <header id="header"></header>
   <div id ="container">
   <h2 class="title">Nonograms</h2>
   <table id="nonogram">

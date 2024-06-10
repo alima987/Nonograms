@@ -1,6 +1,7 @@
 import { puzzles } from "./levels";
 const container = document.getElementById('container')
 const nonogram = document.getElementById('nonogram');
+const header = document.getElementById('header');
 container.appendChild(nonogram)
 
 const rows = 5
@@ -11,10 +12,15 @@ let timeInterval
 let lastRightClick
 let hasWon
 let hasLost
+let currentPuzzle;
+let puzzleIndex = 0
+let puzzleData = puzzles[puzzleIndex]
+let puzzleName = puzzleData[0].name
+let puzzleMatrix = puzzleData[0].data
 
 const createModal = (className) => {
     const element = document.createElement('div');
-    element.classList.add(className);
+    element.classList.add(className, 'hidden');
     container.appendChild(element);
     return element;
   }
@@ -35,7 +41,7 @@ const createModal = (className) => {
   export const overlay = createModal('overlay');
   export const win = createWinLose('win');
   export const lose = createWinLose('lose');
-  
+
   export const winContent = () => {
     if (!hasWon) {
       const wonText = createTextElement('won-text', 'Great! You have solved the nonogram!');
@@ -74,21 +80,24 @@ const createModal = (className) => {
   });
   
 
-for(let i = 0; i < rows; i++) {
-    for(let j = 0; j < cols; j++) {
+  const createNonogramGrid = () => {
+    nonogram.innerHTML = ''; 
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
         const cell = document.createElement('div');
-        cell.classList.add('cell')
-        cell.dataset.row = i
-        cell.dataset.col = j
-        nonogram.appendChild(cell)
+        cell.classList.add('cell');
+        cell.dataset.row = i;
+        cell.dataset.col = j;
+        nonogram.appendChild(cell);
+      }
     }
-}
+  };
 const cellColorChange = (event) => {
     if(event.target.classList.contains('cell')) {
         const cell = event.target
         cell.classList.toggle('black')
     }
-    fillHints();
+    //fillHints();
     if (winCheck()) {
         modalOpen()
     }
@@ -125,11 +134,7 @@ nonogram.addEventListener('contextmenu', (event) => {
     }
 })
 
-const resetBtn = document.createElement('button');
-resetBtn.classList.add('reset_btn')
-resetBtn.innerHTML = "Reset game"
-container.appendChild(resetBtn)
-resetBtn.addEventListener('click', () => {
+const resetGame = () => {
     const cells = document.querySelectorAll('.cell');
     cells.forEach(cell => {
         cell.classList.remove('black');
@@ -142,7 +147,15 @@ resetBtn.addEventListener('click', () => {
     timeStart = null
     document.getElementById('timer').textContent = '00:00'
     modalClose()
-})
+    //createNonogramGrid();
+    fillHints();
+}
+
+const resetBtn = document.createElement('button');
+resetBtn.classList.add('reset_btn')
+resetBtn.textContent = "Reset game"
+container.appendChild(resetBtn)
+resetBtn.addEventListener('click', resetGame)
 
 const timer = document.createElement('div')
 timer.id = 'timer'
@@ -170,31 +183,30 @@ nonogram.addEventListener('click', () => {
         startTimer()
     }
 })
-const puzzleIndex = 0
-const puzzleData = puzzles[puzzleIndex]
-const puzzleName = puzzleData[0].name
-const puzzleMatrix = puzzleData[0].data
 
 const fillHints = () => {
-const rowsHints = document.getElementById('rows-hints')
-const colsHints = document.getElementById('cols-hints')
+    const rowsHints = document.getElementById('rows-hints');
+    const colsHints = document.getElementById('cols-hints');
 
-rowsHints.innerHTML = ''
-colsHints.innerHTML = ''
+    rowsHints.innerHTML = '';
+    colsHints.innerHTML = '';
+     
+    for (let i = 0; i < rows; i++) {
+        const rowHints = document.createElement('div');
+        rowHints.classList.add('row-hint');
+        rowHints.textContent = getRowHints(i);
+        rowsHints.appendChild(rowHints);
+    }
+        
 
-for(let i = 0; i < rows; i++){
-    const rowHints = document.createElement('div')
-    rowHints.id = 'row-hints'
-    rowHints.textContent = getRowHints(i)
-    rowsHints.appendChild(rowHints)
-}
-for(let i = 0; i < cols; i++){
-    const colHints = document.createElement('div')
-    colHints.id = 'col-hints'
-    colHints.textContent = getColHints(i)
-    colsHints.appendChild(colHints)
-}
-}
+    for (let i = 0; i < cols; i++) {
+        const colHints = document.createElement('div');
+        colHints.classList.add('col-hint');
+        colHints.textContent = getColHints(i);
+        colsHints.appendChild(colHints);
+    }
+};
+
 const getRowHints = (rowIndex) => {
     const row = puzzleMatrix[rowIndex]
     const hint = []
@@ -242,7 +254,6 @@ const getRowHints = (rowIndex) => {
    colsHints.id = 'cols-hints';
    container.insertBefore(colsHints, nonogram);
 
-fillHints(); 
 export const winCheck = () => {
     const cells = document.querySelectorAll('.cell')
     for(let i = 0; i < cells.length; i++) {
@@ -256,3 +267,25 @@ export const winCheck = () => {
         }
     return true
 }
+
+const levelsList = document.createElement('span')
+levelsList.classList.add('level-list')
+header.appendChild(levelsList)
+const list = document.createElement('ul')
+list.classList.add('list')
+levelsList.appendChild(list)
+if(list) {
+    puzzles.forEach((puzzle) => {
+        if(puzzle && puzzle.name) {
+            const li = document.createElement('li')
+            li.innerHTML = `${puzzles.name}`
+            list.appendChild(li)
+        }
+    })
+}
+
+
+  window.onload = () => {
+    createNonogramGrid();
+    fillHints();
+};
