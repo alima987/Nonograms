@@ -268,22 +268,43 @@ export const winCheck = () => {
     return true
 }
 
-const levelsList = document.createElement('span')
+const levelsList = document.createElement('div')
 levelsList.classList.add('level-list')
+levelsList.textContent = 'Levels'
 header.appendChild(levelsList)
 const list = document.createElement('ul')
 list.classList.add('list')
 levelsList.appendChild(list)
-if(list) {
-    puzzles.forEach((puzzle) => {
-        if(puzzle && puzzle.name) {
-            const li = document.createElement('li')
-            li.innerHTML = `${puzzles.name}`
-            list.appendChild(li)
-        }
-    })
-}
 
+puzzles[0].map((puzzle) => {
+  const li = document.createElement('li')
+  li.classList.add('li')
+  li.textContent = puzzle.name
+  list.appendChild(li)
+
+  list.addEventListener('click', (event) => {
+    if ( event.target.tagName === 'LI') {
+      const puzzleName = event.target.textContent;
+      const selectedPuzzle = puzzles[0].find((puzzle) => puzzle.name === puzzleName);
+      if (selectedPuzzle) {
+        puzzleMatrix = selectedPuzzle.data;
+        createNonogramGrid();
+        fillHints();
+      }
+    }
+  });
+  
+})
+
+levelsList.addEventListener('click', () => {
+  if(levelsList.classList.contains('display') == false) {
+    levelsList.classList.add('display')
+    list.style.display = 'block'
+  } else {
+    levelsList.classList.remove('display')
+    list.style.display = 'none'
+  }
+})
 
   window.onload = () => {
     createNonogramGrid();
