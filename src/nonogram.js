@@ -306,6 +306,28 @@ levelsList.addEventListener('click', () => {
   }
 })
 
+const solution = document.createElement('button')
+solution.classList.add('solution')
+solution.textContent = "Solution"
+container.appendChild(solution)
+
+const gameSolution = () => {
+  const cells = document.querySelectorAll('.cell')
+  for(let i = 0; i < cells.length; i++) {
+    const cell = cells[i]
+    const row = parseInt(cell.dataset.row)
+    const col = parseInt(cell.dataset.col)
+    const isFilled = puzzleMatrix[row][col] === 1 
+    if (isFilled) {
+        cell.classList.add('black')
+      } else {
+       cell.classList.remove('black')
+      }
+    }
+
+}
+solution.addEventListener('click', gameSolution)
+
   window.onload = () => {
     createNonogramGrid();
     fillHints();
