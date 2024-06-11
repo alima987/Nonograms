@@ -4,8 +4,8 @@ const nonogram = document.getElementById('nonogram');
 const header = document.getElementById('header');
 container.appendChild(nonogram)
 
-const rows = 5
-const cols = 5
+let rows = 5
+let cols = 5
 let timeStart 
 let timeEnd
 let timeInterval
@@ -92,6 +92,11 @@ const createModal = (className) => {
       }
     }
   };
+  const changeGridSize = (size) => {
+    rows = size
+    cols = size
+    createNonogramGrid()
+  }
 const cellColorChange = (event) => {
     if(event.target.classList.contains('cell')) {
         const cell = event.target
@@ -268,43 +273,46 @@ export const winCheck = () => {
     return true
 }
 
-const levelsList = document.createElement('div')
-levelsList.classList.add('level-list')
-levelsList.textContent = 'Levels'
-header.appendChild(levelsList)
-const list = document.createElement('ul')
-list.classList.add('list')
-levelsList.appendChild(list)
+const levelsList = document.createElement('div');
+levelsList.classList.add('level-list');
+levelsList.textContent = "Levels"
+header.appendChild(levelsList);
 
-puzzles[0].map((puzzle) => {
-  const li = document.createElement('li')
-  li.classList.add('li')
-  li.textContent = puzzle.name
-  list.appendChild(li)
+puzzles.forEach((level, i) => {
+    const levelTitle = document.createElement('h3');
+    levelTitle.textContent = `Levels ${i + 1}`;
+    levelsList.appendChild(levelTitle);
 
-  list.addEventListener('click', (event) => {
-    if ( event.target.tagName === 'LI') {
-      const puzzleName = event.target.textContent;
-      const selectedPuzzle = puzzles[0].find((puzzle) => puzzle.name === puzzleName);
-      if (selectedPuzzle) {
-        puzzleMatrix = selectedPuzzle.data;
-        createNonogramGrid();
-        fillHints();
-      }
-    }
-  });
-  
-})
+    const list = document.createElement('ul');
+    list.classList.add('list');
+    levelsList.appendChild(list);
+
+    level.forEach((puzzle) => {
+        const li = document.createElement('li');
+        li.classList.add('li');
+        li.textContent = puzzle.name;
+        list.appendChild(li);
+
+        li.addEventListener('click', (event) => {
+            const puzzleName = event.target.textContent;
+            const selectedPuzzle = level.find((puzzle) => puzzle.name === puzzleName);
+            if (selectedPuzzle) {
+                puzzleMatrix = selectedPuzzle.data;
+                changeGridSize();
+                fillHints();
+            }
+        });
+    });
+});
 
 levelsList.addEventListener('click', () => {
-  if(levelsList.classList.contains('display') == false) {
-    levelsList.classList.add('display')
-    list.style.display = 'block'
+  const list = levelsList.querySelector('ul');
+  if (list.style.display === 'none' || !list.style.display) {
+      list.style.display = 'block';
   } else {
-    levelsList.classList.remove('display')
-    list.style.display = 'none'
+      list.style.display = 'none';
   }
-})
+});
 
 const solution = document.createElement('button')
 solution.classList.add('solution')
@@ -326,7 +334,12 @@ const gameSolution = () => {
     }
 
 }
+
 solution.addEventListener('click', gameSolution)
+document.getElementById('size5').addEventListener('click', () => changeGridSize(5));
+document.getElementById('size10').addEventListener('click', () => changeGridSize(10));
+document.getElementById('size15').addEventListener('click', () => changeGridSize(15));
+
 
   window.onload = () => {
     createNonogramGrid();
