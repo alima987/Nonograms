@@ -49,9 +49,7 @@ export const puzzles = [
         [0, 1, 0, 1, 0],
         [1, 1, 1, 1, 1]
       ]
-    }
-  ],
-  [
+    },
     {
       "name": "ocean",
       "data": [
@@ -127,8 +125,6 @@ export const puzzles = [
     [1, 1, 1, 1, 1, 0, 0, 0, 0, 0]
       ]
     },
-  ],
-  [
     {
       "name": "starfish",
       "data": [

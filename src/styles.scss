@@ -6,15 +6,50 @@ h1 {
 }
 $cell-size: 30px;
 #nonogram {
-  border-collapse: separate;
-    border-spacing: 0 0;
-    overflow: hidden;
+  border-spacing: 0px;
+  border-collapse: collapse;
+  user-select: none;
+    td,
+    th {
+      width: 28px;
+      height: 28px;
+      padding: 4px;
+      line-height: 1.5;
+      white-space: nowrap;
   
-  .cell {
-    border: 1px solid black; // Границы ячеек
-    box-sizing: border-box;
-    background-color: white; // Цвет фона ячейки
-  }
+      &:nth-child(5n) {
+        border-right: 1px solid black;
+      }
+    }
+  
+    tr {
+      &:nth-child(5n) {
+        td,
+        th {
+          border-bottom: 1px solid black;
+        }
+      }
+    }
+  
+    th {
+      background-color: #eee;
+      font-family: 'Ubuntu Mono', monospace;
+  
+      &.highlight {
+        background-color: #ccc;
+      }
+    }
+  
+    td {
+      border-top: 1px dotted #aaa;
+      border-left: 1px dotted #aaa;
+      
+      &:hover {
+        opacity: 0.85;
+        background-color: #f3f3f3;
+      }
+    }
+  
   .black {
     background-color: black;
   }
@@ -30,6 +65,7 @@ $cell-size: 30px;
     height: 30px;
     border: 1px solid #ccc;
     background-color: #fff;
+    box-sizing: border-box;
   }
   
   .cell.black {
