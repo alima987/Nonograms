@@ -42,6 +42,11 @@ const createModal = (className) => {
     return element;
   }
 
+  const saveBtn = document.createElement('button');
+  saveBtn.classList = 'save-btn'
+  saveBtn.textContent = 'Save game'
+  container.append(saveBtn)
+
   const createTextElement = (className, text) => {
     const textElement = document.createElement('div');
     textElement.classList.add(className);
