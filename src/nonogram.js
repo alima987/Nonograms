@@ -1,4 +1,8 @@
 import "./styles.scss";
+import winSoundFile from "./assets/winSound.wav";
+import blackSoundFile from "./assets/black.wav";
+import crossSoundFile from './assets/cross.wav';
+import emptySoundFile from './assets/empty.wav';
 import { puzzles } from "./levels";
 
 const header = document.createElement('div');
@@ -18,21 +22,19 @@ const nonogram = document.createElement('table');
 nonogram.id = 'nonogram'
 container.appendChild(nonogram)
 
-
-
 let timeStart 
-let timeEnd
 let timeInterval
-let lastRightClick
 let hasWon
 let hasLost
-let currentPuzzle;
 let puzzleIndex = 0
 let puzzleData = puzzles[puzzleIndex]
 let puzzleName = puzzleData[0].name
 let puzzleMatrix = puzzleData[0].data
 
-
+const playSound = (soundFile) => {
+  const sound = new Audio(soundFile)
+  sound.play()
+}
 const createModal = (className) => {
     const element = document.createElement('div');
     element.classList.add(className, 'hidden');
@@ -59,9 +61,12 @@ const createModal = (className) => {
 
   export const winContent = () => {
     if (!hasWon) {
-      const wonText = createTextElement('won-text', 'Great! You have solved the nonogram!');
+      const elapsedTime = Math.floor((new Date() - timeStart) / 1000)
+      const wonText = createTextElement('won-text', `Great! You have solved the nonogram in ${elapsedTime} seconds!`);
       win.appendChild(wonText);
       hasWon = true;
+      const resetBtn = document.querySelector('.reset_btn');
+      modal.append(resetBtn)
     }
   };
   
@@ -186,11 +191,20 @@ const createModal = (className) => {
 const cellColorChange = (event) => {
     if(event.target.classList.contains('cell')) {
         const cell = event.target
-        cell.classList.toggle('black')
+        if(!cell.querySelector('.cross')) {
+          if(cell.classList.contains('black')) {
+            playSound(emptySoundFile)
+          } else {
+            playSound(blackSoundFile)
+          }
+          cell.classList.toggle('black')
+
+        }
     }
     if (winCheck()) {
+        playSound(winSoundFile)
         modalOpen()
-    }
+    } 
 }
 nonogram.addEventListener('click', cellColorChange)
 
@@ -200,8 +214,10 @@ const xChange = (event) => {
     const cell = event.target
     const clickedCross = cell.querySelector('.cross')
     if(clickedCross) {
+      playSound(emptySoundFile)
       clickedCross.remove()
     } else {
+      playSound(crossSoundFile)
       const cross = document.createElement('div');
       cross.innerHTML = "&#10060";
       cross.classList.add('cross');
@@ -262,16 +278,16 @@ nonogram.addEventListener('click', () => {
 
 export const winCheck = () => {
     const cells = document.querySelectorAll('.cell')
-    for(let i = 0; i < cells.length; i++) {
+    for(let i = 0; i < cells.length; i++) { 
         const cell = cells[i]
         const row = parseInt(cell.dataset.y)
         const col = parseInt(cell.dataset.x)
         const isFilled = cell.classList.contains('black')
         if ((puzzleMatrix[row][col] === 1 && !isFilled) || (puzzleMatrix[row][col] === 0 && isFilled)) {
             return false;
-          }
         }
-    return true
+     }
+     return true
 }
 const levelsList = document.createElement('div');
 levelsList.classList.add('level-list');
@@ -296,6 +312,7 @@ puzzles.forEach((level, i) => {
                 puzzleMatrix = selectedPuzzle.data;
                 createNonogramGrid(puzzleMatrix);
                 fillHints(puzzleMatrix);
+                resetGame();
             }
         });
     });
@@ -333,8 +350,28 @@ const gameSolution = () => {
 
 solution.addEventListener('click', gameSolution)
 
+const randomBtn = document.createElement('button')
+randomBtn.classList = 'randomGame'
+randomBtn.textContent = 'Random game'
+container.append(randomBtn)
+
+const shuffleGame = (event) => {
+  const randomLvlInx = Math.floor(Math.random() * puzzles.length)
+  const randomLvl = puzzles[randomLvlInx]
+  const randomPuzzleInx = Math.floor(Math.random() * randomLvl.length)
+  const randomPuzzle = randomLvl[randomPuzzleInx]
+  puzzleMatrix = randomPuzzle.data
+  createNonogramGrid(puzzleMatrix);
+  fillHints(puzzleMatrix);
+};
+
+
+randomBtn.addEventListener('click', shuffleGame);
+
+
 
 window.onload = () => {
   createNonogramGrid(puzzleMatrix);
   fillHints(puzzleMatrix);
+  document.addEventListener('contextmenu', (e) => e.preventDefault());
 }
