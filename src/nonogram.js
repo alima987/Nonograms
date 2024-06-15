@@ -30,6 +30,8 @@ let puzzleIndex = 0
 let puzzleData = puzzles[puzzleIndex]
 let puzzleName = puzzleData[0].name
 let puzzleMatrix = puzzleData[0].data
+let leaderBoardShow = false
+let leaderboardTable;
 
 const playSound = (soundFile) => {
   const sound = new Audio(soundFile)
@@ -52,10 +54,15 @@ const createModal = (className) => {
   continueBtn.textContent = 'Continue last game'
   container.append(continueBtn)
  
-  const theme = document.createElement('div')
+  const theme = document.createElement('button')
   theme.classList = "theme";
   theme.textContent = "Theme"
   header.append(theme)
+
+  const leaderBoardBtn = document.createElement('button')
+  leaderBoardBtn.classList = 'leader-btn'
+  leaderBoardBtn.textContent = 'High score'
+  header.append(leaderBoardBtn)
 
   const createTextElement = (className, text) => {
     const textElement = document.createElement('div');
@@ -73,13 +80,14 @@ const createModal = (className) => {
   export const overlay = createModal('overlay');
   export const win = createWinLose('win');
   export const lose = createWinLose('lose');
-
+  
   export const winContent = () => {
     if (!hasWon) {
       const elapsedTime = Math.floor((new Date() - timeStart) / 1000)
       const wonText = createTextElement('won-text', `Great! You have solved the nonogram in ${elapsedTime} seconds!`);
       win.appendChild(wonText);
       hasWon = true;
+      addLeaderData(puzzleName, elapsedTime)
       const resetBtn = document.querySelector('.reset_btn');
       modal.append(resetBtn)
     }
@@ -402,6 +410,57 @@ buttons.forEach(button => {
 });
 }
 theme.addEventListener('click', changeTheme)
+
+const saveLeaderData = (data) => {
+localStorage.setItem('leaders', JSON.stringify(data))
+}
+const getLeaderData = () => {
+  return JSON.parse(localStorage.getItem('leaders')) || []
+}
+const addLeaderData = (puzzleName, elapsedTime) => {
+  const entry = {
+    puzzleName,
+    elapsedTime,
+    timestamp: new Date().toISOString()
+  }
+  let leadersBoard = getLeaderData()
+  leadersBoard.push(entry)
+  leadersBoard.sort((a,b) => a.elapsedTime - b.elapsedTime)
+  if(leadersBoard.length > 5) {
+    leadersBoard = leadersBoard.slice(0, 5)
+  }
+  saveLeaderData(leadersBoard)
+}
+const displayLeaderboard = () => {
+  const leaderboard = getLeaderData();
+
+  if (leaderBoardShow && leaderboardTable) {
+    leaderboardTable.remove();
+    leaderBoardShow = false;
+    leaderboardTable = null; 
+    return;
+  }
+  leaderboardTable = document.createElement('table');
+  leaderboardTable.classList.add('leaderboard-table');
+  leaderBoardBtn.appendChild(leaderboardTable);
+
+  const headerRow = document.createElement('tr');
+  headerRow.innerHTML = '<th>Puzzle</th><th>Time</th>';
+  leaderboardTable.appendChild(headerRow);
+
+  leaderboard.forEach((entry) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `<td>${entry.puzzleName}</td><td>${formatTime(entry.elapsedTime)}</td>`;
+    leaderboardTable.appendChild(row);
+  });
+  leaderBoardShow = true
+};
+const formatTime = (seconds) => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${padZero(minutes)}:${padZero(remainingSeconds)}`;
+};
+leaderBoardBtn.addEventListener('click', displayLeaderboard)
 window.onload = () => {
   createNonogramGrid(puzzleMatrix);
   fillHints(puzzleMatrix);
