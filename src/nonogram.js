@@ -47,6 +47,16 @@ const createModal = (className) => {
   saveBtn.textContent = 'Save game'
   container.append(saveBtn)
 
+  const continueBtn = document.createElement('button');
+  continueBtn.classList = 'continue-btn'
+  continueBtn.textContent = 'Continue last game'
+  container.append(continueBtn)
+ 
+  const theme = document.createElement('div')
+  theme.classList = "theme";
+  theme.textContent = "Theme"
+  header.append(theme)
+
   const createTextElement = (className, text) => {
     const textElement = document.createElement('div');
     textElement.classList.add(className);
@@ -246,6 +256,7 @@ const resetGame = () => {
     timeStart = null
     document.getElementById('timer').textContent = '00:00'
     modalClose()
+    localStorage.removeItem('game');
 }
 
 const resetBtn = document.createElement('button');
@@ -360,7 +371,7 @@ randomBtn.classList = 'randomGame'
 randomBtn.textContent = 'Random game'
 container.append(randomBtn)
 
-const shuffleGame = (event) => {
+const shuffleGame = () => {
   const randomLvlInx = Math.floor(Math.random() * puzzles.length)
   const randomLvl = puzzles[randomLvlInx]
   const randomPuzzleInx = Math.floor(Math.random() * randomLvl.length)
@@ -370,11 +381,27 @@ const shuffleGame = (event) => {
   fillHints(puzzleMatrix);
 };
 
-
 randomBtn.addEventListener('click', shuffleGame);
 
+const changeTheme = () => {
+  const cells = document.querySelectorAll('.cell')
+  cells.forEach((cell) => {
+    cell.classList.toggle('dark')
+  })
+ document.body.classList.toggle('dark')
+ const buttons = [
+  saveBtn,
+  continueBtn,
+  resetBtn,
+  solution,
+  randomBtn
+];
 
-
+buttons.forEach(button => {
+  button.classList.toggle('dark');
+});
+}
+theme.addEventListener('click', changeTheme)
 window.onload = () => {
   createNonogramGrid(puzzleMatrix);
   fillHints(puzzleMatrix);
