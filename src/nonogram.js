@@ -1,8 +1,13 @@
 import "./styles.scss";
-import winSoundFile from "./assets/winSound.wav";
-import blackSoundFile from "./assets/black.wav";
-import crossSoundFile from './assets/cross.wav';
-import emptySoundFile from './assets/empty.wav';
+import winSoundFile from "./assets/sounds/winSound.wav";
+import blackSoundFile from "./assets/sounds/black.wav";
+import crossSoundFile from './assets/sounds/cross.wav';
+import emptySoundFile from './assets/sounds/empty.wav';
+import load from './assets/img/load.png'
+import save from './assets/img/save.png'
+import shuffle from './assets/img/shuffle.png'
+import solutionImg from './assets/img/solution.png'
+import turnDown from './assets/img/turnDown.png'
 import { puzzles } from "./levels";
 
 const main = document.createElement('div')
@@ -12,6 +17,11 @@ document.body.appendChild(main)
 const header = document.createElement('div');
 header.id = 'header'
 main.appendChild(header)
+
+const title = document.createElement('h2')
+title.classList = 'title'
+title.textContent = "Nonograms"
+header.appendChild(title)
 
 const menu = document.createElement('ul')
 menu.id = 'menu'
@@ -36,56 +46,65 @@ const container = document.createElement('div')
 container.id = 'container'
 main.append(container)
 
-const title = document.createElement('h2')
-title.classList = 'title'
-title.textContent = "Nonograms"
-header.appendChild(title)
-
 const createSeaction = (className) => {
 const element = document.createElement('section');
 element.classList.add(className);
 container.appendChild(element);
 return element;
 } 
+
 const timerSection = createSeaction('timer-section')
 const timer = document.createElement('div')
 timer.id = 'timer'
 timer.innerHTML = "00:00"
 timerSection.appendChild(timer)
 
-const gridSection = createSeaction('grid-section')
+const saveLoadSection = createSeaction('save-load-section')
+const saveBtn = document.createElement('div');
+saveBtn.classList = 'save-btn'
+const img = document.createElement('img');
+img.src = save; 
+saveBtn.appendChild(img);
+saveLoadSection.append(saveBtn)
 
+const loadBtn = document.createElement('div');
+loadBtn.classList = 'load-game'
+const loadImg = document.createElement('img');
+loadImg.src = load; 
+loadBtn.appendChild(loadImg);
+saveLoadSection.append(loadBtn)
+ 
+const gridSection = createSeaction('grid-section')
 const nonogram = document.createElement('table');
 nonogram.id = 'nonogram'
 gridSection.appendChild(nonogram)
 
-const saveLoadSection = createSeaction('save-load-section')
-const saveBtn = document.createElement('button');
-saveBtn.classList = 'save-btn'
-saveBtn.textContent = 'Save game'
-saveLoadSection.append(saveBtn)
-
-const loadBtn = document.createElement('button');
-loadBtn.classList = 'load-game'
-loadBtn.textContent = 'Load Game'
-saveLoadSection.append(loadBtn)
- 
 const btnsSection = createSeaction('btns-section')
-const resetBtn = document.createElement('button');
+const resetBtn = document.createElement('div');
 resetBtn.classList.add('reset_btn')
-resetBtn.textContent = "Reset game"
+const resetImg = document.createElement('img');
+resetImg.src = turnDown; 
+resetBtn.appendChild(resetImg);
 btnsSection.appendChild(resetBtn)
   
-const solution = document.createElement('button')
+const solution = document.createElement('div')
 solution.classList.add('solution')
-solution.textContent = "Solution"
+const solutionImage = document.createElement('img');
+solutionImage.src = solutionImg; 
+solutionImage.alt = 'Solution'
+solution.appendChild(solutionImage);
 btnsSection.appendChild(solution)
 
-const randomBtn = document.createElement('button')
+const randomBtn = document.createElement('div')
 randomBtn.classList = 'randomGame'
-randomBtn.textContent = 'Random game'
+const randomImg = document.createElement('img');
+randomImg.src = shuffle; 
+randomBtn.appendChild(randomImg);
 btnsSection.append(randomBtn)
  
+const footer = document.createElement('div')
+footer.id = 'footer';
+main.appendChild(footer)
 let timeStart 
 let timeInterval
 let hasWon
@@ -341,8 +360,8 @@ export const winCheck = () => {
     const cells = document.querySelectorAll('.cell')
     for(let i = 0; i < cells.length; i++) { 
         const cell = cells[i]
-        const row = parseInt(cell.dataset.y)
-        const col = parseInt(cell.dataset.x)
+        const row = parseInt(cell.dataset.y) - 1; 
+        const col = parseInt(cell.dataset.x) - 1;
         const isFilled = cell.classList.contains('black')
         if ((puzzleMatrix[row][col] === 1 && !isFilled) || (puzzleMatrix[row][col] === 0 && isFilled)) {
             return false;
@@ -353,7 +372,7 @@ export const winCheck = () => {
 
 puzzles.forEach((level) => {
   const list = document.createElement('ul');
-  list.classList.add('list', 'hidden'); // Скрыть список уровней по умолчанию
+  list.classList.add('list', 'hidden'); 
   levelsList.appendChild(list);
 
   level.forEach((puzzle) => {
@@ -386,8 +405,8 @@ const gameSolution = () => {
   const cells = document.querySelectorAll('.cell')
   for(let i = 0; i < cells.length; i++) {
     const cell = cells[i]
-    const row = parseInt(cell.dataset.y)
-    const col = parseInt(cell.dataset.x)
+    const row = parseInt(cell.dataset.y) - 1; 
+    const col = parseInt(cell.dataset.x) - 1;
     const isFilled = puzzleMatrix[row][col] === 1 
     if (isFilled) {
         cell.classList.add('black')
