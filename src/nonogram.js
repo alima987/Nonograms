@@ -25,7 +25,6 @@ container.appendChild(nonogram)
 let timeStart 
 let timeInterval
 let hasWon
-let hasLost
 let puzzleIndex = 0
 let puzzleData = puzzles[puzzleIndex]
 let puzzleName = puzzleData[0].name
@@ -49,10 +48,10 @@ const createModal = (className) => {
   saveBtn.textContent = 'Save game'
   container.append(saveBtn)
 
-  const continueBtn = document.createElement('button');
-  continueBtn.classList = 'continue-btn'
-  continueBtn.textContent = 'Continue last game'
-  container.append(continueBtn)
+  const loadBtn = document.createElement('button');
+  loadBtn.classList = 'continue-btn'
+  loadBtn.textContent = 'Continue last game'
+  container.append(loadBtn)
  
   const theme = document.createElement('button')
   theme.classList = "theme";
@@ -90,14 +89,6 @@ const createModal = (className) => {
       addLeaderData(puzzleName, elapsedTime)
       const resetBtn = document.querySelector('.reset_btn');
       modal.append(resetBtn)
-    }
-  };
-  
-  export const loseContent = () => {
-    if (!hasLost) {
-      const lostText = createTextElement('lost-text', 'Sorry! You\'ve lost the game!');
-      lose.appendChild(lostText);
-      hasLost = true;
     }
   };
   
@@ -264,7 +255,6 @@ const resetGame = () => {
     timeStart = null
     document.getElementById('timer').textContent = '00:00'
     modalClose()
-    localStorage.removeItem('game');
 }
 
 const resetBtn = document.createElement('button');
@@ -318,7 +308,7 @@ levelsList.classList.add('level-list');
 levelsList.textContent = "Levels"
 header.appendChild(levelsList);
 
-puzzles.forEach((level, i) => {
+puzzles.forEach((level) => {
     const list = document.createElement('ul');
     list.classList.add('list');
     levelsList.appendChild(list);
@@ -461,6 +451,61 @@ const formatTime = (seconds) => {
   return `${padZero(minutes)}:${padZero(remainingSeconds)}`;
 };
 leaderBoardBtn.addEventListener('click', displayLeaderboard)
+
+const saveGame = () => {
+  const gameState = {
+    puzzleMatrix,
+    hasWon,
+    cellStates: [],
+    min: Number(timer.textContent.slice(0, 2)),
+    sec: Number(timer.textContent.slice(-2))
+  };
+  const cells = document.querySelectorAll('.cell');
+  cells.forEach(cell => {
+    const x = parseInt(cell.dataset.x);
+    const y = parseInt(cell.dataset.y);
+    const isBlack = cell.classList.contains('black');
+    gameState.cellStates.push({ x, y, isBlack });
+  });
+  localStorage.setItem('save', JSON.stringify(gameState));
+  console.log('Game saved successfully:', gameState);
+};
+saveBtn.addEventListener('click', saveGame);
+
+  
+const loadGame = () => {
+  const savedGame = JSON.parse(localStorage.getItem('save'));
+  if (savedGame) {
+    puzzleMatrix = savedGame.puzzleMatrix;
+    hasWon = savedGame.hasWon;
+    timer.textContent = `${
+      String(savedGame.min).length === 1 ? "0" + savedGame.min : savedGame.min
+    }:${String(savedGame.sec).length === 1 ? "0" + savedGame.sec : savedGame.sec}`;
+    
+    createNonogramGrid(puzzleMatrix);
+    fillHints(puzzleMatrix);
+
+    savedGame.cellStates.forEach(state => {
+      const cell = document.querySelector(`.cell[data-x="${state.x}"][data-y="${state.y}"]`);
+      if (cell) {
+        if (state.isBlack) {
+          cell.classList.add('black');
+        } else {
+          cell.classList.remove('black');
+        }
+      }
+    });
+
+    console.log('Game loaded successfully:', savedGame);
+  } else {
+    console.log('No saved game found.');
+  }
+};
+
+
+// Слушатель события на кнопке "Продолжить последнюю игру"
+loadBtn.addEventListener('click', loadGame);
+
 window.onload = () => {
   createNonogramGrid(puzzleMatrix);
   fillHints(puzzleMatrix);
