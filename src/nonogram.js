@@ -5,23 +5,87 @@ import crossSoundFile from './assets/cross.wav';
 import emptySoundFile from './assets/empty.wav';
 import { puzzles } from "./levels";
 
+const main = document.createElement('div')
+main.classList = 'main'
+document.body.appendChild(main)
+
 const header = document.createElement('div');
 header.id = 'header'
-document.body.append(header)
+main.appendChild(header)
+
+const menu = document.createElement('ul')
+menu.id = 'menu'
+header.appendChild(menu)
+
+const theme = document.createElement('div')
+theme.classList = "theme";
+theme.textContent = "Theme"
+header.appendChild(theme)
+
+const leaderBoardBtn = document.createElement('div')
+leaderBoardBtn.classList = 'leader-btn'
+leaderBoardBtn.textContent = 'High score'
+header.appendChild(leaderBoardBtn)
+
+const levelsList = document.createElement('div');
+levelsList.classList.add('level-list');
+levelsList.textContent = "Levels"
+header.appendChild(levelsList);
 
 const container = document.createElement('div')
 container.id = 'container'
-document.body.append(container)
+main.append(container)
 
 const title = document.createElement('h2')
 title.classList = 'title'
 title.textContent = "Nonograms"
-container.appendChild(title)
+header.appendChild(title)
+
+const createSeaction = (className) => {
+const element = document.createElement('section');
+element.classList.add(className);
+container.appendChild(element);
+return element;
+} 
+const timerSection = createSeaction('timer-section')
+const timer = document.createElement('div')
+timer.id = 'timer'
+timer.innerHTML = "00:00"
+timerSection.appendChild(timer)
+
+const gridSection = createSeaction('grid-section')
 
 const nonogram = document.createElement('table');
 nonogram.id = 'nonogram'
-container.appendChild(nonogram)
+gridSection.appendChild(nonogram)
 
+const saveLoadSection = createSeaction('save-load-section')
+const saveBtn = document.createElement('button');
+saveBtn.classList = 'save-btn'
+saveBtn.textContent = 'Save game'
+saveLoadSection.append(saveBtn)
+
+const loadBtn = document.createElement('button');
+loadBtn.classList = 'load-game'
+loadBtn.textContent = 'Load Game'
+saveLoadSection.append(loadBtn)
+ 
+const btnsSection = createSeaction('btns-section')
+const resetBtn = document.createElement('button');
+resetBtn.classList.add('reset_btn')
+resetBtn.textContent = "Reset game"
+btnsSection.appendChild(resetBtn)
+  
+const solution = document.createElement('button')
+solution.classList.add('solution')
+solution.textContent = "Solution"
+btnsSection.appendChild(solution)
+
+const randomBtn = document.createElement('button')
+randomBtn.classList = 'randomGame'
+randomBtn.textContent = 'Random game'
+btnsSection.append(randomBtn)
+ 
 let timeStart 
 let timeInterval
 let hasWon
@@ -31,6 +95,14 @@ let puzzleName = puzzleData[0].name
 let puzzleMatrix = puzzleData[0].data
 let leaderBoardShow = false
 let leaderboardTable;
+
+const menuEl = [levelsList, theme, leaderBoardBtn]
+
+menuEl.forEach((el) => {
+const element = document.createElement('li')
+element.appendChild(el)
+menu.appendChild(element)
+})
 
 const playSound = (soundFile) => {
   const sound = new Audio(soundFile)
@@ -42,26 +114,6 @@ const createModal = (className) => {
     container.appendChild(element);
     return element;
   }
-
-  const saveBtn = document.createElement('button');
-  saveBtn.classList = 'save-btn'
-  saveBtn.textContent = 'Save game'
-  container.append(saveBtn)
-
-  const loadBtn = document.createElement('button');
-  loadBtn.classList = 'continue-btn'
-  loadBtn.textContent = 'Continue last game'
-  container.append(loadBtn)
- 
-  const theme = document.createElement('button')
-  theme.classList = "theme";
-  theme.textContent = "Theme"
-  header.append(theme)
-
-  const leaderBoardBtn = document.createElement('button')
-  leaderBoardBtn.classList = 'leader-btn'
-  leaderBoardBtn.textContent = 'High score'
-  header.append(leaderBoardBtn)
 
   const createTextElement = (className, text) => {
     const textElement = document.createElement('div');
@@ -113,47 +165,59 @@ const createModal = (className) => {
     }
   });
   
-
-  const createNonogramGrid = (arr) => {
-  const nonogram = document.getElementById('nonogram');
-    nonogram.innerHTML = ''; 
-
-    for (let i = 0; i < arr.length; i++) {
+    const createNonogramGrid = (arr) => {
+    const nonogram = document.getElementById('nonogram');
+    nonogram.innerHTML = '';
+    
+    for (let i = 0; i < arr.length + 1; i++) {
+      let classRow = "hints_row";
       const row = document.createElement('tr')
-      row.classList.add('row')
+      if (i === 0) classRow = "nonogram_top";
+      row.classList = classRow;
       nonogram.append(row)
-      for (let j = 0; j < arr.length; j++) {
+      for (let j = 0; j < arr.length + 1; j++) {
         let cell = document.createElement('td');
+        if (i === 0 && j !== 0) {
+          cell.classList = "nonogram_top-hint";
+        }
+        if (j === 0 && i !== 0) {
+          cell.classList = "nonogram_row-hint";
+        }
+        if (j !== 0 && i !== 0) {
         cell.classList.add('cell');
-        cell.dataset.x = j
-        cell.dataset.y = i
+        cell.dataset.x = j;
+        cell.dataset.y = i;
+        }
         row.append(cell);
       }
     }
     fillHints(arr)
-  };
-
-  const fillHints = (arr) => {
-    const rowsHints = document.getElementById('rows-hints');
-    const colsHints = document.getElementById('cols-hints');
+    };
+    
   
-    rowsHints.innerHTML = '';
-    colsHints.innerHTML = '';
-     
-    for (let i = 0; i < arr.length; i++) {
-        const rowHints = document.createElement('div');
-        rowHints.classList.add('row-hint');
-        rowHints.textContent = getRowHints(arr, i);
-        rowsHints.appendChild(rowHints);
-    }
-        
-    for (let i = 0; i < arr[0].length; i++) {
-        const colHints = document.createElement('div');
-        colHints.classList.add('col-hint');
-        colHints.textContent = getColHints(arr, i);
-        colsHints.appendChild(colHints);
-    }
-  };
+
+    const fillHints = (arr) => {
+      const rowsHints = document.getElementsByClassName('nonogram_row-hint');
+      const colsHints = document.getElementsByClassName('nonogram_top-hint');
+    
+      for (let i = 0; i < rowsHints.length; i++) {
+        rowsHints[i].innerHTML = '';
+      }
+      for (let i = 0; i < colsHints.length; i++) {
+        colsHints[i].innerHTML = '';
+      }
+    
+      for (let i = 0; i < arr.length; i++) {
+        const rowHint = getRowHints(arr, i);
+        rowsHints[i].textContent = rowHint;
+      }
+ 
+      for (let i = 0; i < arr[0].length; i++) {
+        const colHint = getColHints(arr, i);
+        colsHints[i].textContent = colHint;
+      }
+    };
+    
   
   const getRowHints = (arr, rowIndex) => {
     const row = arr[rowIndex]
@@ -172,7 +236,7 @@ const createModal = (className) => {
     if( count > 0) {
        hint.push(count)
    }
-   return hint.join(' ')
+   return hint.join(' ');
    }
   
    const getColHints = (arr, colIndex) => {
@@ -191,17 +255,10 @@ const createModal = (className) => {
     if(count > 0) {
         hint.push(count)
     }
-    return hint.join('\n')
+    return hint.join(' ');
    }
   
-   const rowsHints = document.createElement('div');
-   rowsHints.id = 'rows-hints'
-   container.insertBefore(rowsHints, nonogram.nextSibling)
-  
-   const colsHints = document.createElement('div');
-   colsHints.id = 'cols-hints';
-   container.insertBefore(colsHints, nonogram);
-
+   
 const cellColorChange = (event) => {
     if(event.target.classList.contains('cell')) {
         const cell = event.target
@@ -256,17 +313,7 @@ const resetGame = () => {
     document.getElementById('timer').textContent = '00:00'
     modalClose()
 }
-
-const resetBtn = document.createElement('button');
-resetBtn.classList.add('reset_btn')
-resetBtn.textContent = "Reset game"
-container.appendChild(resetBtn)
 resetBtn.addEventListener('click', resetGame)
-
-const timer = document.createElement('div')
-timer.id = 'timer'
-timer.innerHTML = "00:00"
-container.appendChild(timer)
 
 const startTimer = () => {
     timeStart = new Date()
@@ -303,48 +350,37 @@ export const winCheck = () => {
      }
      return true
 }
-const levelsList = document.createElement('div');
-levelsList.classList.add('level-list');
-levelsList.textContent = "Levels"
-header.appendChild(levelsList);
 
 puzzles.forEach((level) => {
-    const list = document.createElement('ul');
-    list.classList.add('list');
-    levelsList.appendChild(list);
+  const list = document.createElement('ul');
+  list.classList.add('list', 'hidden'); // Скрыть список уровней по умолчанию
+  levelsList.appendChild(list);
 
-    level.forEach((puzzle) => {
-        const li = document.createElement('li');
-        li.classList.add('li');
-        li.textContent = puzzle.name;
-        list.appendChild(li);
+  level.forEach((puzzle) => {
+      const li = document.createElement('li');
+      li.classList.add('li');
+      li.textContent = puzzle.name;
+      list.appendChild(li);
 
-        li.addEventListener('click', (event) => {
-            const puzzleName = event.target.textContent;
-            const selectedPuzzle = level.find((puzzle) => puzzle.name === puzzleName);
-            if (selectedPuzzle) {
-                puzzleMatrix = selectedPuzzle.data;
-                createNonogramGrid(puzzleMatrix);
-                fillHints(puzzleMatrix);
-                resetGame();
-            }
-        });
-    });
+      li.addEventListener('click', (event) => {
+          const puzzleName = event.target.textContent;
+          const selectedPuzzle = level.find((puzzle) => puzzle.name === puzzleName);
+          if (selectedPuzzle) {
+              puzzleMatrix = selectedPuzzle.data;
+              createNonogramGrid(puzzleMatrix);
+              fillHints(puzzleMatrix);
+              resetGame();
+          }
+      });
+  });
 });
 
-/*levelsList.addEventListener('click', () => {
-  const list = levelsList.querySelector('ul');
-  if (list.style.display === 'none' || !list.style.display) {
-      list.style.display = 'block';
-  } else {
-      list.style.display = 'none';
+levelsList.addEventListener('click', (event) => {
+  if (event.target === levelsList) {
+      const list = levelsList.querySelector('ul');
+      list.classList.toggle('hidden');
   }
-});*/
-
-const solution = document.createElement('button')
-solution.classList.add('solution')
-solution.textContent = "Solution"
-container.appendChild(solution)
+});
 
 const gameSolution = () => {
   const cells = document.querySelectorAll('.cell')
@@ -363,11 +399,6 @@ const gameSolution = () => {
 }
 
 solution.addEventListener('click', gameSolution)
-
-const randomBtn = document.createElement('button')
-randomBtn.classList = 'randomGame'
-randomBtn.textContent = 'Random game'
-container.append(randomBtn)
 
 const shuffleGame = () => {
   const randomLvlInx = Math.floor(Math.random() * puzzles.length)
@@ -502,8 +533,6 @@ const loadGame = () => {
   }
 };
 
-
-// Слушатель события на кнопке "Продолжить последнюю игру"
 loadBtn.addEventListener('click', loadGame);
 
 window.onload = () => {

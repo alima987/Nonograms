@@ -15,9 +15,20 @@ body.dark {
 #container {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+ul#menu {
+  display: flex;
+  flex-wrap: nowrap;
   align-items: flex-start;
+  justify-content: flex-end;
+  list-style: none;
 }
 #nonogram {
+  //position: absolute;
+  top: 100px;
+  left: 590px;
   border-spacing: 0px;
   border-collapse: collapse;
   user-select: none;
@@ -29,13 +40,13 @@ body.dark {
       line-height: 1.5;
       white-space: nowrap;
   
-      &:nth-child(5n) {
+      &:nth-child(5n + 1) {
         border-right: 1px solid black;
       }
     }
   
     tr {
-      &:nth-child(5n) {
+      &:nth-child(5n + 1) {
         td,
         th {
           border-bottom: 1px solid black;
@@ -97,30 +108,41 @@ body.dark {
   color: white;
 
 }
-
+.grid-section {
+  min-height: 500px;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+  border-radius: 8px;
+}
 #cols-hints {
-  position: absolute;
-  top: 34px;
-  left: 398px;
-  width: 209px;
+  //position: absolute;
+  top: 56px;
+  left: 575px;
+  width: 179px;
   display: flex;
   flex-wrap: nowrap;
   align-items: flex-end;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 20px;
 }
 .col-hint {
   white-space: pre-line;
 }
 div#rows-hints {
-  height: 258px;
-  width: 38px;
-  position: absolute;
+  height: 223px;
+  width: 40px;
+  //position: absolute;
   top: 67px;
-  left: 332px;
+  left: 539px;
   display: flex;
   flex-direction: column;
   align-items: end;
-  justify-content: space-around;
+  justify-content: center;
+  gap: 13px;
 }
 .modal {
   display: flex;
@@ -182,3 +204,46 @@ div#rows-hints {
 .display {
   display:block;
 }
+// Стили для секции таймера
+.timer-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  font-family: Arial, sans-serif;
+}
+
+// Стили для таймера
+#timer {
+  font-size: 24px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  color: #333;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 80px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Анимация при изменении времени
+@keyframes timerChange {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+// Применение анимации при изменении времени
+#timer.change {
+  animation: timerChange 0.3s ease-in-out;
+}
+
