@@ -29,18 +29,30 @@ header.appendChild(menu)
 
 const theme = document.createElement('div')
 theme.classList = "theme";
-theme.textContent = "Theme"
 header.appendChild(theme)
+
+const themeBtn = document.createElement('button')
+themeBtn.classList = 'theme-btn'
+themeBtn.textContent = "Theme"
+theme.appendChild(themeBtn)
 
 const leaderBoardBtn = document.createElement('div')
 leaderBoardBtn.classList = 'leader-btn'
-leaderBoardBtn.textContent = 'High score'
 header.appendChild(leaderBoardBtn)
+
+const leaderBtn = document.createElement('button')
+leaderBtn.classList = 'leaders-btn'
+leaderBtn.textContent = 'High score'
+leaderBoardBtn.appendChild(leaderBtn)
 
 const levelsList = document.createElement('div');
 levelsList.classList.add('level-list');
-levelsList.textContent = "Levels"
 header.appendChild(levelsList);
+
+const dropDownBtn = document.createElement('button');
+dropDownBtn.classList = 'drop-down'
+dropDownBtn.textContent = "Levels"
+levelsList.appendChild(dropDownBtn);
 
 const container = document.createElement('div')
 container.id = 'container'
@@ -114,6 +126,12 @@ let puzzleName = puzzleData[0].name
 let puzzleMatrix = puzzleData[0].data
 let leaderBoardShow = false
 let leaderboardTable;
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!document.body.classList.contains('dark') && !document.body.classList.contains('colorful')) {
+      document.body.classList.add('theme-light');
+  }
+});
 
 const menuEl = [levelsList, theme, leaderBoardBtn]
 
@@ -372,13 +390,14 @@ export const winCheck = () => {
 
 puzzles.forEach((level) => {
   const list = document.createElement('ul');
-  list.classList.add('list', 'hidden'); 
+  list.classList.add('list'); 
+  list.id = 'puzzleList'
   levelsList.appendChild(list);
 
-  level.forEach((puzzle) => {
+  level.forEach((puzzle, i) => {
       const li = document.createElement('li');
       li.classList.add('li');
-      li.textContent = puzzle.name;
+      li.textContent = `${i + 1}. ${puzzle.name}`;
       list.appendChild(li);
 
       li.addEventListener('click', (event) => {
@@ -394,12 +413,22 @@ puzzles.forEach((level) => {
   });
 });
 
-levelsList.addEventListener('click', (event) => {
-  if (event.target === levelsList) {
-      const list = levelsList.querySelector('ul');
-      list.classList.toggle('hidden');
+dropDownBtn.addEventListener('click', () => {
+  document.getElementById('puzzleList').classList.toggle('show')
+})
+
+window.onclick = function(event) {
+  if(!event.target.matches('.drop-down')) {
+    let dropdown = document.getElementsByClassName('.list')
+    for(let i = 0; i < dropdown.length; i++) {
+      let openDropdown = dropdown[i]
+      if(openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show')
+      }
+     }
+
   }
-});
+}
 
 const gameSolution = () => {
   const cells = document.querySelectorAll('.cell')
@@ -431,25 +460,67 @@ const shuffleGame = () => {
 
 randomBtn.addEventListener('click', shuffleGame);
 
-const changeTheme = () => {
-  const cells = document.querySelectorAll('.cell')
-  cells.forEach((cell) => {
-    cell.classList.toggle('dark')
-  })
- document.body.classList.toggle('dark')
- const buttons = [
-  saveBtn,
-  continueBtn,
-  resetBtn,
-  solution,
-  randomBtn
-];
+const changeTheme = (event) => {
+  const nextTheme = event.target.classList.contains('light')
+    ? 'light'
+    : event.target.classList.contains('dark')
+    ? 'dark'
+    : event.target.classList.contains('colorful')
+    ? 'colorful'
+    : null;
 
-buttons.forEach(button => {
-  button.classList.toggle('dark');
-});
+  if (!nextTheme) {
+    return; 
+  }
+
+  const currentTheme = document.body.classList.contains('dark')
+    ? 'dark'
+    : document.body.classList.contains('colorful')
+    ? 'colorful'
+    : 'light';
+
+  const cells = document.querySelectorAll('.cell');
+  cells.forEach((cell) => {
+    cell.classList.remove(currentTheme);
+    cell.classList.add(nextTheme);
+  });
+
+  document.body.classList.remove(currentTheme);
+  document.body.classList.add(nextTheme);
+};
+
+const themeList = document.createElement('ul');
+themeList.classList = 'theme-list'
+themeList.id = 'theme-list-id'
+theme.appendChild(themeList)
+const themes = ['Dark', 'Colorful', 'Light']
+themes.forEach((name) => {
+  const themeItem = document.createElement('li')
+  themeItem.classList = 'theme-item'
+  themeItem.textContent = name.charAt(0).toUpperCase() + name.slice(1);
+  themeList.appendChild(themeItem)
+
+  themeItem.addEventListener('click', (event) => {
+    document.body.className = ''
+    document.body.classList.add(`theme-${name.toLowerCase()}`)
+    changeTheme(event)
+  })
+})
+themeBtn.addEventListener('click', () => {
+  document.getElementById('theme-list-id').classList.toggle('show')
+})
+window.onclick = function(event) {
+  if(!event.target.matches('.theme-btn')) {
+    let dropdown = document.getElementsByClassName('.theme-list')
+    for(let i = 0; i < dropdown.length; i++) {
+      let openDropdown = dropdown[i]
+      if(openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show')
+      }
+     }
+
+  }
 }
-theme.addEventListener('click', changeTheme)
 
 const saveLeaderData = (data) => {
 localStorage.setItem('leaders', JSON.stringify(data))
@@ -482,8 +553,9 @@ const displayLeaderboard = () => {
   }
   leaderboardTable = document.createElement('table');
   leaderboardTable.classList.add('leaderboard-table');
+  leaderboardTable.id = 'leader-table'
   leaderBoardBtn.appendChild(leaderboardTable);
-
+   
   const headerRow = document.createElement('tr');
   headerRow.innerHTML = '<th>Puzzle</th><th>Time</th>';
   leaderboardTable.appendChild(headerRow);
@@ -500,7 +572,7 @@ const formatTime = (seconds) => {
   const remainingSeconds = seconds % 60;
   return `${padZero(minutes)}:${padZero(remainingSeconds)}`;
 };
-leaderBoardBtn.addEventListener('click', displayLeaderboard)
+leaderBtn.addEventListener('click', displayLeaderboard);
 
 const saveGame = () => {
   const gameState = {
