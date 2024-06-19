@@ -423,3 +423,19 @@ img.save-img {
 img.load-img {
   width: 46px;
 }
+
+@media (min-width: 500px) {
+  .main {
+    width: 100%;
+}
+.title {
+  font-size: 2em;
+}
+#container {
+  padding: 20px;
+}
+
+ul#menu li a {
+  padding: 12px 20px;
+}
+}

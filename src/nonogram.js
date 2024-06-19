@@ -25,6 +25,7 @@ header.appendChild(title)
 
 const menu = document.createElement('ul')
 menu.id = 'menu'
+menu.classList = 'menu'
 header.appendChild(menu)
 
 const theme = document.createElement('div')
@@ -147,6 +148,7 @@ element.appendChild(el)
 menu.appendChild(element)
 })
 
+
 const playSound = (soundFile) => {
   const sound = new Audio(soundFile)
   sound.play()
@@ -198,6 +200,12 @@ const createModal = (className) => {
   export const modalClose = () => {
     modal.classList.add('hidden');
     overlay.classList.add('hidden');
+
+    const resetBtn = modal.querySelector('.reset_btn');
+  if (resetBtn) {
+    resetBtn.remove(); // Удаляем кнопку reset из модального окна
+    btnsSection.insertBefore(resetBtn, solution); // Возвращаем кнопку reset в шапку
+  }
   };
   
   document.addEventListener('keydown', (e) => {
