@@ -76,6 +76,8 @@ const saveBtn = document.createElement('div');
 saveBtn.classList = 'save-btn'
 const img = document.createElement('img');
 img.src = save; 
+img.classList = 'save-img'
+img.alt = "Save Button"
 saveBtn.appendChild(img);
 saveLoadSection.append(saveBtn)
 
@@ -83,6 +85,8 @@ const loadBtn = document.createElement('div');
 loadBtn.classList = 'load-game'
 const loadImg = document.createElement('img');
 loadImg.src = load; 
+loadImg.classList = 'load-img'
+loadImg.alt = "Load Button"
 loadBtn.appendChild(loadImg);
 saveLoadSection.append(loadBtn)
  
@@ -96,6 +100,7 @@ const resetBtn = document.createElement('div');
 resetBtn.classList.add('reset_btn')
 const resetImg = document.createElement('img');
 resetImg.src = turnDown; 
+resetImg.alt = "Reset Button"
 resetBtn.appendChild(resetImg);
 btnsSection.appendChild(resetBtn)
   
@@ -111,6 +116,7 @@ const randomBtn = document.createElement('div')
 randomBtn.classList = 'randomGame'
 const randomImg = document.createElement('img');
 randomImg.src = shuffle; 
+randomBtn.alt = "Random Button"
 randomBtn.appendChild(randomImg);
 btnsSection.append(randomBtn)
  
@@ -186,9 +192,7 @@ const createModal = (className) => {
     overlay.classList.remove('hidden');
     if (winCheck()) {
       winContent();
-    } else {
-      loseContent();
-    }
+    } 
   };
   
   export const modalClose = () => {
@@ -231,9 +235,7 @@ const createModal = (className) => {
     fillHints(arr)
     };
     
-  
-
-    const fillHints = (arr) => {
+      const fillHints = (arr) => {
       const rowsHints = document.getElementsByClassName('nonogram_row-hint');
       const colsHints = document.getElementsByClassName('nonogram_top-hint');
     
@@ -248,54 +250,57 @@ const createModal = (className) => {
         const rowHint = getRowHints(arr, i);
         rowsHints[i].textContent = rowHint;
       }
- 
       for (let i = 0; i < arr[0].length; i++) {
         const colHint = getColHints(arr, i);
-        colsHints[i].textContent = colHint;
+        const hintDivs = colHint.split(' ').map(hint => {
+          const div = document.createElement('div');
+          div.textContent = hint;
+          return div;
+        });
+        hintDivs.forEach(div => colsHints[i].appendChild(div));
       }
     };
     
-  
-  const getRowHints = (arr, rowIndex) => {
+    
+    const getRowHints = (arr, rowIndex) => {
     const row = arr[rowIndex]
     const hint = []
     let count = 0
     for ( let i = 0; i < row.length; i++) {
-       if(row[i] === 1) {
-           count++
-       } else {
-           if( count > 0) {
-               hint.push(count)
-               count = 0
-           }
-       }
+    if(row[i] === 1) {
+    count++
+    } else {
+    if( count > 0) {
+    hint.push(count)
+    count = 0
+    }
+    }
     }
     if( count > 0) {
-       hint.push(count)
-   }
-   return hint.join(' ');
-   }
-  
-   const getColHints = (arr, colIndex) => {
+    hint.push(count)
+    }
+    return hint.join(' ');
+    }
+    
+    const getColHints = (arr, colIndex) => {
     const hint = []
     let count = 0
     for ( let i = 0; i < arr.length; i++) {
-        if(arr[i][colIndex] === 1) {
-            count++
-        } else {
-            if(count > 0) {
-                hint.push(count)
-                count = 0
-            }
-        }
+    if(arr[i][colIndex] === 1) {
+    count++
+    } else {
+    if(count > 0) {
+    hint.push(count)
+    count = 0
+    }
+    }
     }
     if(count > 0) {
-        hint.push(count)
+    hint.push(count)
     }
-    return hint.join(' ');
-   }
-  
-   
+    return hint.join(' ')
+    }
+
 const cellColorChange = (event) => {
     if(event.target.classList.contains('cell')) {
         const cell = event.target
@@ -394,13 +399,17 @@ puzzles.forEach((level) => {
   list.id = 'puzzleList'
   levelsList.appendChild(list);
 
-  level.forEach((puzzle, i) => {
+  level.forEach((puzzle) => {
       const li = document.createElement('li');
       li.classList.add('li');
-      li.textContent = `${i + 1}. ${puzzle.name}`;
+      li.textContent = `${puzzle.name}`;
       list.appendChild(li);
 
       li.addEventListener('click', (event) => {
+        list.querySelectorAll('li').forEach((i) => {
+          i.classList.remove('active')
+        })
+          li.classList.add('active')
           const puzzleName = event.target.textContent;
           const selectedPuzzle = level.find((puzzle) => puzzle.name === puzzleName);
           if (selectedPuzzle) {
@@ -412,23 +421,22 @@ puzzles.forEach((level) => {
       });
   });
 });
-
 dropDownBtn.addEventListener('click', () => {
   document.getElementById('puzzleList').classList.toggle('show')
 })
 
 window.onclick = function(event) {
   if(!event.target.matches('.drop-down')) {
-    let dropdown = document.getElementsByClassName('.list')
-    for(let i = 0; i < dropdown.length; i++) {
-      let openDropdown = dropdown[i]
-      if(openDropdown.classList.contains('show')) {
-        openDropdown.classList.remove('show')
-      }
-     }
-
+  let dropdown = document.getElementsByClassName('.list')
+  for(let i = 0; i < dropdown.length; i++) {
+  let openDropdown = dropdown[i]
+  if(openDropdown.classList.contains('show')) {
+  openDropdown.classList.remove('show')
   }
-}
+  }
+  
+  }
+  }
 
 const gameSolution = () => {
   const cells = document.querySelectorAll('.cell')
@@ -501,6 +509,10 @@ themes.forEach((name) => {
   themeList.appendChild(themeItem)
 
   themeItem.addEventListener('click', (event) => {
+    themeList.querySelectorAll('.theme-item').forEach((i) => {
+      i.classList.remove('active')
+    })
+    themeItem.classList.add('active')
     document.body.className = ''
     document.body.classList.add(`theme-${name.toLowerCase()}`)
     changeTheme(event)
