@@ -148,7 +148,6 @@ element.appendChild(el)
 menu.appendChild(element)
 })
 
-
 const playSound = (soundFile) => {
   const sound = new Audio(soundFile)
   sound.play()
