@@ -23,6 +23,15 @@ title.classList = 'title'
 title.textContent = "Nonograms"
 header.appendChild(title)
 
+const burgerBtn = document.createElement('div');
+burgerBtn.classList = 'menu-btn';
+burgerBtn.innerHTML = `
+    <span></span>
+    <span></span>
+    <span></span>
+`;
+header.appendChild(burgerBtn);
+
 const menu = document.createElement('ul')
 menu.id = 'menu'
 menu.classList = 'menu'
@@ -133,6 +142,12 @@ let puzzleName = puzzleData[0].name
 let puzzleMatrix = puzzleData[0].data
 let leaderBoardShow = false
 let leaderboardTable;
+
+let menuBtn = document.querySelector('.menu-btn');
+menuBtn.addEventListener('click', function(){
+	menuBtn.classList.toggle('active');
+	menu.classList.toggle('active');
+})
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!document.body.classList.contains('dark') && !document.body.classList.contains('colorful')) {
