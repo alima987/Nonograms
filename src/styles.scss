@@ -49,11 +49,11 @@ button.theme-colorful, .save-btn.theme-colorful, .load-game.theme-colorful, .res
   color: #8b0000;
 }
 
-div#header {
+#header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  padding: 10px 67px;
 }
 #container {
   display: flex;
@@ -308,7 +308,6 @@ section.btns-section {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  backdrop-filter: blur(5px);
   border-radius: 8px;
   margin-bottom: 50px;
 }
@@ -423,6 +422,31 @@ img.save-img {
 }
 img.load-img {
   width: 46px;
+}
+#footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  border-top: 1px solid #e9ecef;
+  margin-top: 30px;
+}
+
+.footer-img {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+
+#footer a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #000;
+}
+
+#footer a:hover {
+  opacity: 0.8;
 }
 
 @media screen and (max-width: 500px) {

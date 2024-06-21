@@ -8,6 +8,7 @@ import save from './assets/img/save.png'
 import shuffle from './assets/img/shuffle.png'
 import solutionImg from './assets/img/solution.png'
 import turnDown from './assets/img/turnDown.png'
+import github from './assets/img/github.png'
 import { puzzles } from "./levels";
 
 const main = document.createElement('div')
@@ -132,7 +133,16 @@ btnsSection.append(randomBtn)
  
 const footer = document.createElement('div')
 footer.id = 'footer';
+const footerImg = document.createElement('img');
+footerImg.src = github; 
+footerImg.classList = 'footer-img'
+footerImg.alt = "GitHub"
+const footerLink = document.createElement('a');
+footerLink.href = 'https://github.com/alima987';
+footerLink.appendChild(footerImg);
+footer.appendChild(footerLink);
 main.appendChild(footer)
+
 let timeStart 
 let timeInterval
 let hasWon
